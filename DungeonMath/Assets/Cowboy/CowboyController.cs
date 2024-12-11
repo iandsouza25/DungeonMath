@@ -2,20 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MovementState
-{
-    Idle,
-    WalkingForward,
-    WalkingBackward,
-    WalkingLeft,
-    WalkingRight
-}
+
 
 public class CowboyController : MonoBehaviour
 {
     private Animator animationController;
     private CharacterController characterController;
-    private MovementState currentMovementState = MovementState.Idle;
 
     private bool isCrouching;
     private bool isRunning;
@@ -23,11 +15,22 @@ public class CowboyController : MonoBehaviour
     private bool isJumping;
 
     private float crouchVelocity = 1.5f;
-    private float walkingVelocity = 2.0f;
+    private float walking_velocity = 3.0f;
     private float runningVelocity = 6.0f;
     private Vector3 movementDirection;
     private float velocity;
     private const float gravity = 7.8f;
+
+    public float health;
+    public bool has_won;
+
+    private bool isDead;
+
+    private bool isWalkingBackwards;
+    private bool isWalkingForwards;
+    private bool isWalkingLeft;
+    private bool isWalkingRight;
+    
 
 
     // Start is called before the first frame update
@@ -35,203 +38,198 @@ public class CowboyController : MonoBehaviour
     {
         animationController = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
-        animationController.SetBool("isWalkingForwards", true);
-        animationController.SetBool("isWalkingForwards", false);
-
-        isCrouching = false;
+        velocity = 0.0f;
+        has_won = false;
+        isDead = false;
+        health = 100.0f;
         movementDirection = new Vector3(0.0f, 0.0f, 0.0f);
+
+        isWalkingBackwards = false;
+        isWalkingForwards = false;
+        isWalkingLeft = false;
+        isWalkingRight = false;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        Vector3 forwardMovement;
-        Vector3 lateralMovement;
 
-        float xdirection;
-        float zdirection;
-
-        float mouseX = Input.GetAxis("Mouse X");
-        float rotationSpeed = 2.0f;
-        transform.Rotate(new Vector3(0.0f, mouseX * rotationSpeed, 0.0f));
-
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            isCrouching = !isCrouching;
-        }
-
-        bool skipAnimation = false;
-        bool isGrounded = characterController.isGrounded || animationController.GetCurrentAnimatorStateInfo(0).IsName("Idle");
-        if (Input.GetKey(KeyCode.B) && isGrounded)
-        {
-            skipAnimation = true;
-            animationController.SetBool("isBackstepJump", true);
-            isCrouching = false;
-            Vector3 backwardDirection = -transform.forward;
-            backwardDirection.y = 0.0f;
-            backwardDirection = backwardDirection.normalized;
-
-            float backstepDistance = 5.0f;
-            Vector3 backstepMovement = backwardDirection * backstepDistance;
-
-            characterController.Move(backstepMovement * Time.deltaTime);
-        }
-        else if (Input.GetKey(KeyCode.Space) && isGrounded)
-        {
-            skipAnimation = true;
-            bool isSprinting = animationController.GetCurrentAnimatorStateInfo(0).IsName("Running");
-            float multiplyFactor = !isSprinting ? 1.0f : 4.5f;
-
-            animationController.SetBool("isJumpingForwards", true);
-            isCrouching = false;
-            Vector3 forwardDirection = transform.forward;
-
-            forwardDirection.y = 0.0f;
-            forwardDirection = forwardDirection.normalized;
-
-            float forwardDistance = 5.0f;
-            forwardMovement = forwardDirection * forwardDistance;
-
-            characterController.Move(forwardMovement * Time.deltaTime * multiplyFactor);
-        }
-        else
-        {
+    void Update(){
+        if (health <= 0.0f){
+            health = 0.0f;
             animationController.SetBool("isBackstepJump", false);
             animationController.SetBool("isJumpingForwards", false);
-        }
-        
-        isGrounded = characterController.isGrounded || animationController.GetCurrentAnimatorStateInfo(0).IsName("Idle");
-        skipAnimation = !isGrounded || skipAnimation;
-        HandleMovementInput(ref isCrouching, ref isRunning, skipAnimation);
+            animationController.SetBool("Idle", false);
+            animationController.SetBool("isWalkingForwards", false);
+            animationController.SetBool("isWalkingBackwards", false);
+            animationController.SetBool("isWalkingLeft", false);
+            animationController.SetBool("isWalkingRight", false);
+            animationController.SetBool("isRunning", false);
+            animationController.SetBool("isCrouch", false);
 
-        UpdateAnimator(ref isCrouching, ref isRunning);        
+        }
 
-        bool isWalkingForwards = currentMovementState == MovementState.WalkingForward;
-        bool isWalkingBackwards = currentMovementState == MovementState.WalkingBackward;
-        bool isWalkingLeft = currentMovementState == MovementState.WalkingLeft;
-        bool isWalkingRight = currentMovementState == MovementState.WalkingRight;
+        if (health <= 0.0f && !isDead){
+            // DeathStat();
+            Debug.Log("You died!");
+        }
 
+        else if (!isDead){
+            if(has_won){
+                Debug.Log("You won!");
+            }
+            else{
+                Move();
+            }
+        }
+        bool is_crouching = false;
+        if ( (animationController.GetCurrentAnimatorStateInfo(0).IsName("isCrouch")))
+            {
+                is_crouching = true;
+            }
 
-        if (isRunning)
-        {
-            velocity = Mathf.Clamp(velocity + 0.015f, 0, runningVelocity);
-        }
-        else if (isWalkingForwards && !isCrouching)
-        {
-            velocity = Mathf.Clamp(velocity + 0.01f, 0, walkingVelocity);
-        }
-        else if (isWalkingBackwards && !isCrouching)
-        {
-            velocity = Mathf.Clamp(velocity - 0.01f, walkingVelocity * -1, 0);
-        }
-        else if (isWalkingLeft && !isCrouching)
-        {
-            velocity = Mathf.Clamp(velocity - 0.01f, walkingVelocity * -1, 0);
-        }
-        else if (isWalkingRight && !isCrouching)
-        {
-            velocity = Mathf.Clamp(velocity + 0.01f, 0, walkingVelocity);
-        }
-        else if (isWalkingForwards && isCrouching)
-        {
-            velocity = Mathf.Clamp(velocity + 0.01f, 0, crouchVelocity);
-        }
-        else if (isWalkingBackwards && isCrouching)
-        {
-            velocity = Mathf.Clamp(velocity - 0.01f, crouchVelocity * -1, 0);
-        }
-        else if (isWalkingLeft && isCrouching)
-        {
-            velocity = Mathf.Clamp(velocity - 0.01f, crouchVelocity * -1, 0);
-        }
-        else if (isWalkingRight && isCrouching)
-        {
-            velocity = Mathf.Clamp(velocity + 0.01f, 0, crouchVelocity);
-        }
+        if (is_crouching)
+            {
+                GetComponent<CapsuleCollider>().center = new Vector3(GetComponent<CapsuleCollider>().center.x, 0.0f, GetComponent<CapsuleCollider>().center.z);
+            }
         else
         {
-            velocity = 0;
+            GetComponent<CapsuleCollider>().center = new Vector3(GetComponent<CapsuleCollider>().center.x, 0.9f, GetComponent<CapsuleCollider>().center.z);
         }
+        float xdirection = Mathf.Sin(Mathf.Deg2Rad * transform.rotation.eulerAngles.y);
+        float zdirection = Mathf.Cos(Mathf.Deg2Rad * transform.rotation.eulerAngles.y);
 
+        Vector3 forwardMovement = new Vector3(xdirection, 0.0f, zdirection) * (isWalkingForwards || isWalkingBackwards ? 1 : 0);
+        Vector3 lateralMovement = new Vector3(-zdirection, 0.0f, xdirection) * (isWalkingLeft || isWalkingRight ? -1 : 0);
 
-        if (isCrouching)
-        {
-            GetComponent<CapsuleCollider>().center = new Vector3(GetComponent<CapsuleCollider>().center.x, 0.35f, GetComponent<CapsuleCollider>().center.z);
-        }
-        else
-        {
-            GetComponent<CapsuleCollider>().center = new Vector3(GetComponent<CapsuleCollider>().center.x, 0.7f, GetComponent<CapsuleCollider>().center.z);
-        }
-
-        xdirection = Mathf.Sin(Mathf.Deg2Rad * transform.rotation.eulerAngles.y);
-        zdirection = Mathf.Cos(Mathf.Deg2Rad * transform.rotation.eulerAngles.y);
-
-        forwardMovement = new Vector3(xdirection, 0.0f, zdirection) * (isWalkingForwards || isWalkingBackwards ? 1 : 0);
-        lateralMovement = new Vector3(-zdirection, 0.0f, xdirection) * (isWalkingLeft || isWalkingRight ? -1 : 0);
-
-        movementDirection = (forwardMovement + lateralMovement).normalized;
-        movementDirection.y -= gravity * Time.deltaTime;
-
+        movementDirection = (forwardMovement + lateralMovement);
         if (transform.position.y > 0.0f)
         {
-            Vector3 lowerCharacter = movementDirection * velocity * Time.deltaTime;
-            lowerCharacter.y = -100f;
-            characterController.Move(lowerCharacter);
+            Vector3 lower_character = movementDirection * velocity * Time.deltaTime;
+            lower_character.y = -100f; 
+            characterController.Move(lower_character);
         }
         else
         {
             characterController.Move(movementDirection * velocity * Time.deltaTime);
         }
-        
     }
 
-    void HandleMovementInput(ref bool isCrouching, ref bool isRunning, bool skipAnimation)
-    {
-        if (skipAnimation)
-        {
-            return;
+    void Move(){
+        if (health > 0.0f){
+            animationController.SetBool("isBackstepJump", false);
+            animationController.SetBool("isJumpingForwards", false);
+            animationController.SetBool("Idle", false);
+            animationController.SetBool("isWalkingForwards", false);
+            animationController.SetBool("isWalkingBackwards", false);
+            animationController.SetBool("isWalkingLeft", false);
+            animationController.SetBool("isWalkingRight", false);
+            animationController.SetBool("isRunning", false);
+            animationController.SetBool("isCrouch", false);
+            animationController.SetBool("CrouchForwards", false);
+            animationController.SetBool("CrouchBackwards", false);
+            animationController.SetBool("CrouchLeft", false);
+            animationController.SetBool("CrouchRight", false);
+            isWalkingBackwards = false;
+            isWalkingForwards = false;
+            isWalkingLeft = false;
+            isWalkingRight = false;
         }
 
-        if (Input.GetKey(KeyCode.W))
-        {
-            currentMovementState = MovementState.WalkingForward;
+        if (Input.GetKeyDown(KeyCode.Space)) 
+            {
+                animationController.SetBool("isJumpingForwards", true);
+                velocity += .5f;
+                    if(velocity > walking_velocity*3.0f){
+                        velocity = walking_velocity*3.0f;
+                    }
+            }
+        else if (Input.GetKey(KeyCode.B)){
+            animationController.SetBool("isBackstepJump", true);
+            velocity -= .5f;
+                if(velocity < -1.0f * walking_velocity*3.0f){
+                    velocity = -1.0f * walking_velocity*3.0f;
+                }
         }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            currentMovementState = MovementState.WalkingBackward;
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            currentMovementState = MovementState.WalkingLeft;
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            currentMovementState = MovementState.WalkingRight;
-        }
-        else
-        {
-            currentMovementState = MovementState.Idle;
-        }
+        else{
 
-        if (Input.GetKey(KeyCode.LeftShift) && currentMovementState == MovementState.WalkingForward)
-        {
-            isRunning = true;
-            isCrouching = false;
-        }
-        else
-        {
-            isRunning = false;
-        }
-    }
 
-    void UpdateAnimator(ref bool isCrouching, ref bool isRunning)
-    {
-        animationController.SetBool("isWalkingForwards", currentMovementState == MovementState.WalkingForward);
-        animationController.SetBool("isWalkingBackwards", currentMovementState == MovementState.WalkingBackward);
-        animationController.SetBool("isWalkingLeft", currentMovementState == MovementState.WalkingLeft);
-        animationController.SetBool("isWalkingRight", currentMovementState == MovementState.WalkingRight);
-        animationController.SetBool("isRunning", isRunning);
-        animationController.SetBool("isCrouch", isCrouching);
+            if (Input.GetKey(KeyCode.C) &&Input.GetKey(KeyCode.W))
+            {
+                animationController.SetBool("CrouchForwards", true);
+                isWalkingForwards = true;
+                velocity = crouchVelocity;
+            }
+            else if (Input.GetKey(KeyCode.C) && Input.GetKey(KeyCode.S))
+            {
+                animationController.SetBool("CrouchBackwards", true);
+                isWalkingBackwards = true;
+                velocity = -1 * crouchVelocity;
+            }
+            else if (Input.GetKey(KeyCode.C) && Input.GetKey(KeyCode.A))
+            {
+                animationController.SetBool("CrouchLeft", true);
+                isWalkingLeft = true;
+                velocity = -1 * crouchVelocity;
+            }
+            else if (Input.GetKey(KeyCode.C) && Input.GetKey(KeyCode.D))
+            {
+                animationController.SetBool("CrouchRight", true);
+                isWalkingRight = true;
+                velocity =crouchVelocity;
+            }
+
+            else if (Input.GetKey(KeyCode.C))
+            {
+                animationController.SetBool("isCrouch", true);
+            }
+            else if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.W))
+            {
+                isWalkingForwards = true;
+                animationController.SetBool("isRunning", true);
+                velocity += .5f;
+                if(velocity > runningVelocity){
+                    velocity = runningVelocity;
+                }
+            }
+
+            else if (Input.GetKey(KeyCode.W))
+            {
+                isWalkingForwards = true;
+                animationController.SetBool("isWalkingForwards", true);
+                velocity += .5f;
+                if(velocity > walking_velocity){
+                    velocity = walking_velocity;
+                }
+            }
+            else if (Input.GetKey(KeyCode.S))
+            {
+                isWalkingBackwards = true;
+                animationController.SetBool("isWalkingBackwards", true);
+                velocity -= .5f;
+                if(velocity < -1 * walking_velocity/1.5f){
+                    velocity = -1 * walking_velocity/1.5f;
+                }
+            }
+
+            else if (Input.GetKey(KeyCode.A)){
+                isWalkingLeft = true;
+                animationController.SetBool("isWalkingLeft", true);
+                velocity -= .5f;
+                if(velocity < -1 * walking_velocity){
+                    velocity = -1 *walking_velocity;
+                }
+            }
+            else if (Input.GetKey(KeyCode.D)){
+                isWalkingRight = true;
+                animationController.SetBool("isWalkingRight", true);
+                velocity += .5f;
+                if(velocity > walking_velocity){
+                    velocity = walking_velocity;
+                }
+            }
+            else{
+                animationController.SetBool("Idle", true);
+                velocity = 0f;
+            }
+        }
     }
 
     
