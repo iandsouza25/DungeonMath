@@ -27,6 +27,7 @@ public class CowboyController : MonoBehaviour
     private float runningVelocity = 6.0f;
     private Vector3 movementDirection;
     private float velocity;
+    private const float gravity = 7.8f;
 
 
     // Start is called before the first frame update
@@ -34,6 +35,8 @@ public class CowboyController : MonoBehaviour
     {
         animationController = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
+        animationController.SetBool("isWalkingForwards", true);
+        animationController.SetBool("isWalkingForwards", false);
 
         isCrouching = false;
         movementDirection = new Vector3(0.0f, 0.0f, 0.0f);
@@ -45,6 +48,9 @@ public class CowboyController : MonoBehaviour
         Vector3 forwardMovement;
         Vector3 lateralMovement;
 
+        float xdirection;
+        float zdirection;
+
         float mouseX = Input.GetAxis("Mouse X");
         float rotationSpeed = 2.0f;
         transform.Rotate(new Vector3(0.0f, mouseX * rotationSpeed, 0.0f));
@@ -54,16 +60,39 @@ public class CowboyController : MonoBehaviour
             isCrouching = !isCrouching;
         }
 
-        bool isGrounded = characterController.isGrounded;
+        bool skipAnimation = false;
+        bool isGrounded = characterController.isGrounded || animationController.GetCurrentAnimatorStateInfo(0).IsName("Idle");
         if (Input.GetKey(KeyCode.B) && isGrounded)
         {
+            skipAnimation = true;
             animationController.SetBool("isBackstepJump", true);
             isCrouching = false;
+            Vector3 backwardDirection = -transform.forward;
+            backwardDirection.y = 0.0f;
+            backwardDirection = backwardDirection.normalized;
+
+            float backstepDistance = 5.0f;
+            Vector3 backstepMovement = backwardDirection * backstepDistance;
+
+            characterController.Move(backstepMovement * Time.deltaTime);
         }
         else if (Input.GetKey(KeyCode.Space) && isGrounded)
         {
+            skipAnimation = true;
+            bool isSprinting = animationController.GetCurrentAnimatorStateInfo(0).IsName("Running");
+            float multiplyFactor = !isSprinting ? 1.0f : 4.5f;
+
             animationController.SetBool("isJumpingForwards", true);
             isCrouching = false;
+            Vector3 forwardDirection = transform.forward;
+
+            forwardDirection.y = 0.0f;
+            forwardDirection = forwardDirection.normalized;
+
+            float forwardDistance = 5.0f;
+            forwardMovement = forwardDirection * forwardDistance;
+
+            characterController.Move(forwardMovement * Time.deltaTime * multiplyFactor);
         }
         else
         {
@@ -71,8 +100,9 @@ public class CowboyController : MonoBehaviour
             animationController.SetBool("isJumpingForwards", false);
         }
         
-
-        HandleMovementInput(ref isCrouching, ref isRunning);
+        isGrounded = characterController.isGrounded || animationController.GetCurrentAnimatorStateInfo(0).IsName("Idle");
+        skipAnimation = !isGrounded || skipAnimation;
+        HandleMovementInput(ref isCrouching, ref isRunning, skipAnimation);
 
         UpdateAnimator(ref isCrouching, ref isRunning);        
 
@@ -122,7 +152,6 @@ public class CowboyController : MonoBehaviour
         {
             velocity = 0;
         }
-        Debug.Log(velocity);
 
 
         if (isCrouching)
@@ -134,13 +163,14 @@ public class CowboyController : MonoBehaviour
             GetComponent<CapsuleCollider>().center = new Vector3(GetComponent<CapsuleCollider>().center.x, 0.7f, GetComponent<CapsuleCollider>().center.z);
         }
 
-        float xdirection = Mathf.Sin(Mathf.Deg2Rad * transform.rotation.eulerAngles.y);
-        float zdirection = Mathf.Cos(Mathf.Deg2Rad * transform.rotation.eulerAngles.y);
+        xdirection = Mathf.Sin(Mathf.Deg2Rad * transform.rotation.eulerAngles.y);
+        zdirection = Mathf.Cos(Mathf.Deg2Rad * transform.rotation.eulerAngles.y);
 
         forwardMovement = new Vector3(xdirection, 0.0f, zdirection) * (isWalkingForwards || isWalkingBackwards ? 1 : 0);
         lateralMovement = new Vector3(-zdirection, 0.0f, xdirection) * (isWalkingLeft || isWalkingRight ? -1 : 0);
 
         movementDirection = (forwardMovement + lateralMovement).normalized;
+        movementDirection.y -= gravity * Time.deltaTime;
 
         if (transform.position.y > 0.0f)
         {
@@ -155,8 +185,13 @@ public class CowboyController : MonoBehaviour
         
     }
 
-    void HandleMovementInput(ref bool isCrouching, ref bool isRunning)
+    void HandleMovementInput(ref bool isCrouching, ref bool isRunning, bool skipAnimation)
     {
+        if (skipAnimation)
+        {
+            return;
+        }
+
         if (Input.GetKey(KeyCode.W))
         {
             currentMovementState = MovementState.WalkingForward;
