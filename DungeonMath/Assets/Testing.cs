@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Testing : MonoBehaviour
 {
+    public bool debug;
     private enum State
     {
         PATROL,
@@ -20,6 +21,7 @@ public class Testing : MonoBehaviour
     Vector3 patrolPosition;
     public GameObject waypoint1;
     public GameObject waypoint2;
+
     private GameObject[] patrol;
 
     public float detectFOV;
@@ -32,21 +34,7 @@ public class Testing : MonoBehaviour
 
     private void Start()
     {
-        pathfinding = new Pathfinding(15, 9);
-
-        pathfinding.placeWallVert(6, 0, 6);
-        pathfinding.placeWallVert(5, 0, 6);
-
-        pathfinding.placeWallVert(6, 8, 12);
-        pathfinding.placeWallVert(5, 8, 12);
-
-        pathfinding.placeWallVert(4, 11, 12);
-
-        pathfinding.placeWallVert(3,2, 12);
-        pathfinding.placeWallVert(2,2, 12);
-
-        pathfinding.placeWallHoriz(8, 0, 1);
-        pathfinding.placeWallHoriz(9, 0, 1);
+        pathfinding = new Pathfinding(100, 100);
 
         patrol = new GameObject[] { waypoint1, waypoint2 };
         patrolPosition = getNextPatrolPosition();
@@ -60,28 +48,27 @@ public class Testing : MonoBehaviour
                 moveTo(patrolPosition);
                 if (destinationReached(patrolPosition))
                 {
+                    Debug.Log("Reached patrol position, pausing");
                     movement.StopMoving();
                     patrolPosition = getNextPatrolPosition();
                     moveTo(patrolPosition);
                 }
-                //searchForPlayer();
+                searchForPlayer();
                 break;
             case State.CHASE:
+                Debug.Log("Chasing...");
                 moveTo(player.transform.position);
                 if (destinationReached(player.transform.position))
                 {
+                    Debug.Log("Caught player");
                     movement.StopMoving();
                     state = State.PATROL;
                 }
-                //searchForPlayer();
+                searchForPlayer();
                 break;
         }
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            player.transform.position = getPosFromMouse();
-            state = State.CHASE;
-        }
+    
     }
 
     private Vector3 getNextPatrolPosition()
@@ -132,12 +119,23 @@ public class Testing : MonoBehaviour
 
     private bool destinationReached(Vector3 goal) 
     {
-        return (Vector3.Distance(transform.position, goal) < 0.5f);
+       if (Vector3.Distance(transform.position, goal) < movement.destThreshold)
+        {
+            Debug.Log("Destination Reached");
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private void searchForPlayer()
     {
-        DrawDebugFOV();
+        if (debug)
+        {
+            DrawDebugFOV();
+        }
         if (canSeePlayer())
         {
             Debug.Log("Player Spotted");
@@ -150,14 +148,50 @@ public class Testing : MonoBehaviour
 
     private bool canSeePlayer()
     {
-        Vector3 dirToPlayer = player.transform.position - transform.position;
+        Vector3 playerBody = player.transform.position + Vector3.up * 1f;
+        Vector3 npcBody = transform.position + Vector3.up * 1.5f; ;
+        Vector3 dirToPlayer = playerBody - npcBody;
         float angleToPlayer = Vector3.Angle(transform.forward, dirToPlayer);
         if (dirToPlayer.magnitude > detectRange || angleToPlayer > detectFOV/2) return false; //player is out of view and/or range
 
-        Ray lineOfSight = new Ray(transform.position, dirToPlayer);
-        if (Physics.Raycast(lineOfSight, out RaycastHit hit, detectRange) && hit.transform == player.transform) return true;
-
+        if (checkLinesOfSight(dirToPlayer)) return true;
+        Debug.Log("Raycast fail, cannot see player"); 
         return false;
+    }
+
+    private bool checkLinesOfSight(Vector3 playerDir)
+    {
+        float spread = 5f;
+        Vector3 left = Quaternion.AngleAxis(-spread, Vector3.up) * playerDir;
+        Vector3 right = Quaternion.AngleAxis(spread, Vector3.up) * playerDir;
+        Vector3 npcBody = transform.position + Vector3.up * 1.5f; ;
+
+        if (debug)
+        {
+            Debug.DrawRay(npcBody, playerDir * detectRange, Color.cyan, 0f);
+            Debug.DrawRay(npcBody, left * detectRange, Color.cyan, 0f);
+            Debug.DrawRay(npcBody, right * detectRange, Color.cyan, 0f);
+        }
+
+
+        Ray lineOfSight = new Ray(npcBody, playerDir);
+        Ray leftRay = new Ray(npcBody, left);
+        Ray rightRay = new Ray(npcBody, right);
+
+
+        Ray[] rays = new Ray[] { lineOfSight, leftRay, rightRay };
+        bool playerHit = false;
+        Collider playerCollider = player.GetComponent<Collider>();
+
+
+        foreach(Ray r in rays)
+        {
+            if(Physics.Raycast(r, out RaycastHit hit, detectRange) && hit.transform == player.transform)
+            {
+                playerHit = true;
+            }
+        }
+        return playerHit;
     }
 
     private void DrawDebugFOV()
@@ -168,8 +202,8 @@ public class Testing : MonoBehaviour
         Vector3 leftBoundary = leftRotation * transform.forward * detectRange;
         Vector3 rightBoundary = rightRotation * transform.forward * detectRange;
 
-        Debug.DrawLine(transform.position, transform.position + leftBoundary, Color.yellow,1f);
-        Debug.DrawLine(transform.position, transform.position + rightBoundary, Color.yellow,1f);
+        Debug.DrawLine(transform.position, transform.position + leftBoundary, Color.yellow,0f);
+        Debug.DrawLine(transform.position, transform.position + rightBoundary, Color.yellow,0f);
 
     }
 

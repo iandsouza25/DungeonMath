@@ -231,7 +231,7 @@ public class Pathfinding
     {
         for (int i = 0; i < path.Count - 1; i++)
         {
-            Debug.DrawLine(new Vector3(path[i].x, 0, path[i].z), new Vector3(path[i + 1].x, 0, path[i + 1].z), Color.green, 0.5f);
+            Debug.DrawLine(new Vector3(path[i].x, 0, path[i].z), new Vector3(path[i + 1].x, 0, path[i + 1].z), Color.green, 0f);
         }
     }
 }
