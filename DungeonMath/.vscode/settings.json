@@ -2,13 +2,9 @@
     "files.exclude": {
         "**/.DS_Store": true,
         "**/.git": true,
-<<<<<<< HEAD
         "**/.vs": true,
         "**/.gitmodules": true,
         "**/.vsconfig": true,
-=======
-        "**/.gitmodules": true,
->>>>>>> 71150d8dd6fa8905002d0ac90553ceaeddb66079
         "**/*.booproj": true,
         "**/*.pidb": true,
         "**/*.suo": true,
@@ -53,14 +49,10 @@
         "library/": true,
         "obj/": true,
         "Obj/": true,
-<<<<<<< HEAD
         "Logs/": true,
         "logs/": true,
         "ProjectSettings/": true,
         "UserSettings/": true,
-=======
-        "ProjectSettings/": true,
->>>>>>> 71150d8dd6fa8905002d0ac90553ceaeddb66079
         "temp/": true,
         "Temp/": true
     },
