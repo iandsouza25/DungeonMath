@@ -10,6 +10,7 @@ public class Grid{
     private float cellSize;
     private PathNode[,] gridArray;
     private TextMesh[,] debugTextArray;
+    private Vector3 origin;
     
     public TextMesh placeTileText(string text, Vector3 pos)
     {
@@ -29,11 +30,12 @@ public class Grid{
         return textMesh;
     }
 
-    public Grid(int width, int height, float cellSize)
+    public Grid(int width, int height, float cellSize, Vector3 origin)
     {
         this.width = width;
         this.height = height;
         this.cellSize = cellSize;
+        this.origin = origin;
 
         gridArray = new PathNode[width, height];
         debugTextArray = new TextMesh[width, height];
@@ -55,14 +57,14 @@ public class Grid{
 
     private Vector3 GetWorldPosition(int x, int y)
     {
-        return new Vector3(x, 0, y) * this.cellSize;
+        return new Vector3(x, 0, y) * this.cellSize + origin;
     }
 
 
     public void GetXY(Vector3 worldPos, out int x, out int y)
     {
-        x = Mathf.FloorToInt(worldPos.x / cellSize);
-        y = Mathf.FloorToInt(worldPos.z / cellSize);
+        x = Mathf.FloorToInt((worldPos - origin).x / cellSize);
+        y = Mathf.FloorToInt((worldPos - origin).z / cellSize);
     }
 
     public void SetTile(int x, int y, PathNode value)

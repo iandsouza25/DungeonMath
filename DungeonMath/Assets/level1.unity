@@ -11893,7 +11893,7 @@ Transform:
   m_GameObject: {fileID: 434616958}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.978, y: 0, z: 5.984}
+  m_LocalPosition: {x: 2.45, y: 0, z: 6.35}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19753,6 +19753,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1676609100239073865, guid: 0d780173c250d334f80c9061373c8e4f, type: 3}
   m_PrefabInstance: {fileID: 1139726524}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &721876598
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 721876599}
+  m_Layer: 0
+  m_Name: gridOrigin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &721876599
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 721876598}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.8, y: 0, z: -0.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &723611043
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34764,8 +34795,10 @@ MonoBehaviour:
   player: {fileID: 1059561511}
   waypoint1: {fileID: 1417346120}
   waypoint2: {fileID: 434616958}
-  detectFOV: 60
-  detectRange: 10
+  searchRadius: 10
+  searchTime: 0
+  detectFOV: 90
+  detectRange: 20
 --- !u!114 &1278007917
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34778,8 +34811,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8d4f245e64acae4e82fad5622e0e3aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0.05
-  destThreshold: 0.5
+  walkSpeed: 0.05
+  runSpeed: 0
+  rotationSpeed: 5
 --- !u!1001 &1282432776
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -59171,3 +59205,4 @@ SceneRoots:
   - {fileID: 434408679}
   - {fileID: 2094826061}
   - {fileID: 2043060411}
+  - {fileID: 721876599}

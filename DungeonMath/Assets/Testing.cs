@@ -9,10 +9,12 @@ public class Testing : MonoBehaviour
     private enum State
     {
         PATROL,
-        CHASE
+        CHASE,
+        SEARCH
     }
     private State state;
     public GameObject player;
+    private Vector3 lastKnown = Vector3.negativeInfinity;
 
     private Pathfinding pathfinding;
     EnemyMovement movement;
@@ -21,8 +23,13 @@ public class Testing : MonoBehaviour
     Vector3 patrolPosition;
     public GameObject waypoint1;
     public GameObject waypoint2;
-
     private GameObject[] patrol;
+
+    private List<Vector3> search;
+    private Vector3 currentSearch;
+    public float searchRadius;
+    public float searchTime;
+    private float searchClock;
 
     public float detectFOV;
     public float detectRange;
@@ -34,7 +41,7 @@ public class Testing : MonoBehaviour
 
     private void Start()
     {
-        pathfinding = new Pathfinding(100, 100);
+        pathfinding = new Pathfinding(100, 100, new Vector3(-0.8f, 0, -0.8f));
 
         patrol = new GameObject[] { waypoint1, waypoint2 };
         patrolPosition = getNextPatrolPosition();
@@ -51,24 +58,83 @@ public class Testing : MonoBehaviour
                     Debug.Log("Reached patrol position, pausing");
                     movement.StopMoving();
                     patrolPosition = getNextPatrolPosition();
-                    moveTo(patrolPosition);
+                    //get2RandomPositons();
+                    //state = State.SEARCH;
                 }
                 searchForPlayer();
                 break;
+
             case State.CHASE:
                 Debug.Log("Chasing...");
-                moveTo(player.transform.position);
-                if (destinationReached(player.transform.position))
+                moveTo(lastKnown);
+                if (destinationReached(player.transform.position)) 
                 {
                     Debug.Log("Caught player");
                     movement.StopMoving();
                     state = State.PATROL;
+                } else if (destinationReached(lastKnown))
+                {
+                    Debug.Log("Lost player, beginning search");
+                    movement.StopMoving();
+                    //get2RandomPositons();
+                    //state = State.SEARCH;
+                    state = State.PATROL;
                 }
                 searchForPlayer();
+                break;
+
+            case State.SEARCH:
+                moveTo(currentSearch);
+                if (destinationReached(currentSearch))
+                {
+                    Debug.Log("Searched position, moving on...");
+                    if (search.Count <= 0)
+                    {
+                        Debug.Log("Out of positions to search");
+                        state = State.PATROL;
+                    }
+                    getNextSearchPosition();
+                }
                 break;
         }
 
     
+    }
+
+    private void get2RandomPositons()
+    {
+        Vector3 origin = transform.position;
+        Vector3 pos1 = new Vector3(origin.x + Random.Range(-searchRadius, searchRadius), 0, origin.z + Random.Range(-searchRadius, searchRadius));
+        Vector3 pos2 = new Vector3(origin.x + Random.Range(-searchRadius, searchRadius), 0, origin.z + Random.Range(-searchRadius, searchRadius));
+
+        List<Vector3> testPath = pathfinding.FindPath(transform.position, pos1);
+        while(testPath == null)
+        {
+            pos1 = new Vector3(origin.x + Random.Range(-searchRadius, searchRadius), 0, origin.z + Random.Range(-searchRadius, searchRadius));
+            testPath = pathfinding.FindPath(transform.position, pos1);
+        }
+        testPath = pathfinding.FindPath(transform.position, pos2);
+        while(testPath == null)
+        {
+            pos2 = new Vector3(origin.x + Random.Range(-searchRadius, searchRadius), 0, origin.z + Random.Range(-searchRadius, searchRadius));
+            testPath = pathfinding.FindPath(transform.position, pos2);
+        }
+
+        search = new List<Vector3> { pos1, pos2 };
+        getNextSearchPosition();
+    }
+
+
+
+    private void getNextSearchPosition()
+    {
+        if(search.Count <= 0)
+        {
+            state = State.PATROL;
+            return;
+        }
+        currentSearch = search[0];
+        search.RemoveAt(0);
     }
 
     private Vector3 getNextPatrolPosition()
@@ -119,7 +185,7 @@ public class Testing : MonoBehaviour
 
     private bool destinationReached(Vector3 goal) 
     {
-       if (Vector3.Distance(transform.position, goal) < movement.destThreshold)
+       if (Vector3.Distance(transform.position, goal) < 0.5f)
         {
             Debug.Log("Destination Reached");
             return true;
@@ -139,12 +205,12 @@ public class Testing : MonoBehaviour
         if (canSeePlayer())
         {
             Debug.Log("Player Spotted");
+            lastKnown = player.transform.position;
             state = State.CHASE;
-        } else
-        {
-            state = State.PATROL;
         }
     }
+       
+         
 
     private bool canSeePlayer()
     {

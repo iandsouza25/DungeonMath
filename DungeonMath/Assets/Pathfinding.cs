@@ -47,10 +47,12 @@ public class Pathfinding
     private bool[,] walls;
     private List<PathNode> open;
     private List<PathNode> close;
-    public Pathfinding(int width, int height)
+    private Vector3 origin;
+    public Pathfinding(int width, int height, Vector3 origin)
     {
-        grid = new Grid(width, height, 1.33f);
+        grid = new Grid(width, height, 1.33f, origin);
         walls = new bool[width, height];
+        this.origin = origin;
         for (int i = 0; i < width; i++) { 
             for(int j = 0; j < height; j++)
             {
@@ -70,7 +72,7 @@ public class Pathfinding
         List<Vector3> worldPath = new List<Vector3>();
         foreach(PathNode node in path)
         {
-            worldPath.Add(new Vector3(node.x + 0.5f, 0 , node.y + 0.5f) * grid.getCellSize());
+            worldPath.Add(new Vector3(node.x + 0.5f, 0 , node.y + 0.5f) * grid.getCellSize() + origin);
         }
         return worldPath;
     }
