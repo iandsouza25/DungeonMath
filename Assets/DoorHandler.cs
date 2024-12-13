@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DoorHandler : MonoBehaviour
 {
-    public GameObject canvas
+    public GameObject canvas;
     private bool canvasActive = false;
     // wip
     // Start is called before the first frame update
