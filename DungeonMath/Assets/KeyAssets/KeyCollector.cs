@@ -8,7 +8,7 @@ using UnityEngine;
 public class KeyCollector : MonoBehaviour
 {
     // Start is called before the first frame update
-    public const int NUM_VALID_KEYS = 2;
+    public int NUM_VALID_KEYS;
     private const int TOTAL_KEYS = 15; 
     private List<String> keysCollected = new List<String>();
     // keyCollectingOrder list gets populated in Start(), it will contain the value of keys that will be collecting
@@ -18,20 +18,35 @@ public class KeyCollector : MonoBehaviour
     private static readonly System.Random rnd = new System.Random();
     private int currentIndex = 0;
 
+
     // Everything in the Start function will be moved to a new function once I 
     void Start()
     {
-        // Mock, Level 1, 
-        Queue<String> equationKeys = new Queue<String>();
-        equationKeys.Enqueue("+");
-        equationKeys.Enqueue("5");
 
-        // The above lines should be taken out
-        // We should Hhve a list of the valid keys passed in, it should be created when the equation is made
-        // The list would be iterated through and added to the equationKeys list
+
+        //check for instance of equation generator
+        EquationGenerator eqGenerator = FindObjectOfType<EquationGenerator>();
+        if (eqGenerator == null)
+        {
+            Debug.LogError("No EquationGenerator found in the scene.");
+            return;
+        }
+
+        eqGenerator.GenerateEquation();
+        List<string> missingKeys = eqGenerator.GetMissingKeys();
+        Debug.Log(eqGenerator.GetEquation());
+        int currentLevel = eqGenerator.currentLevel;
+
+
+        Queue<String> equationKeys = new Queue<String>();
+        foreach (var key in missingKeys)
+        {
+            equationKeys.Enqueue(key);
+        }
+        NUM_VALID_KEYS = missingKeys.Count;
 
         // Populates which indexes have been taken, first x indexes are valid keys, rest third of remaining keys are operators (ex. 2 valid keys, 13 non valid, 1/3 of the non valid keys will be operators)
-        const int NUM_OPERATORS = (TOTAL_KEYS - NUM_VALID_KEYS) / 3;
+        int NUM_OPERATORS = (TOTAL_KEYS - NUM_VALID_KEYS) / 3;
         while (keySlotsTaken.Count < NUM_VALID_KEYS + NUM_OPERATORS) 
         {
             int keyIndex = GetRandomInt(0, TOTAL_KEYS - 1);
@@ -39,6 +54,9 @@ public class KeyCollector : MonoBehaviour
                 keySlotsTaken.Add(keyIndex);
             }
         }
+
+        int maxNumber = 10 + currentLevel * 5;
+        
  
         for (int i = 0; i < 15; i++) 
         {
@@ -52,7 +70,7 @@ public class KeyCollector : MonoBehaviour
             }
             else
             {
-                keyCollectingOrder.Add(GetRandomInt(-12, 12).ToString());
+                keyCollectingOrder.Add(GetRandomInt(-1 * maxNumber, maxNumber).ToString());
             }
         }
     }
@@ -78,8 +96,8 @@ public class KeyCollector : MonoBehaviour
 
     private String GetRandomOperator()
     {
-        List<String> operators = new List<String> {"+", "-", "/", "*"};
-        return operators[GetRandomInt(0, 3)];
+        List<String> operators = new List<String> {"+", "-"};
+        return operators[GetRandomInt(0, 1)];
     }
 
     // Can be used by UI to for inventory
