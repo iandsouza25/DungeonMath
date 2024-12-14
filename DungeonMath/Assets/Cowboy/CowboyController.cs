@@ -14,12 +14,12 @@ public class CowboyController : MonoBehaviour
     private bool isBackstep;
     private bool isJumping;
 
-    private float crouchVelocity = 1.5f;
-    private float walking_velocity = 3.0f;
-    private float runningVelocity = 6.0f;
+    private float crouchVelocity = 3.0f;
+    private float walking_velocity = 4.0f;
+    private float runningVelocity = 8.0f;
     private Vector3 movementDirection;
     private float velocity;
-    private const float gravity = 7.8f;
+    private const float gravity = 15f;
 
     public float health;
     public bool has_won;
@@ -30,6 +30,11 @@ public class CowboyController : MonoBehaviour
     private bool isWalkingForwards;
     private bool isWalkingLeft;
     private bool isWalkingRight;
+
+
+    private float verticalVelocity; // Add this variable to manage vertical movement
+    private const float jumpForce = 5.0f; // Jump strength
+
     
 
 
@@ -100,16 +105,19 @@ public class CowboyController : MonoBehaviour
         Vector3 lateralMovement = new Vector3(-zdirection, 0.0f, xdirection) * (isWalkingLeft || isWalkingRight ? -1 : 0);
 
         movementDirection = (forwardMovement + lateralMovement);
-        if (transform.position.y > 0.0f)
+
+
+        if (!characterController.isGrounded)
         {
-            Vector3 lower_character = movementDirection * velocity * Time.deltaTime;
-            lower_character.y = -100f; 
-            characterController.Move(lower_character);
+            verticalVelocity -= gravity * Time.deltaTime;
         }
-        else
-        {
-            characterController.Move(movementDirection * velocity * Time.deltaTime);
-        }
+        else if (verticalVelocity <= 0.0f){
+                verticalVelocity = 0.0f;
+            }
+        Vector3 verticalMovement = new Vector3(0, verticalVelocity, 0);
+        characterController.Move(movementDirection * velocity * Time.deltaTime);
+        characterController.Move(verticalMovement * Time.deltaTime);
+        
     }
 
     void Move(){
@@ -133,19 +141,20 @@ public class CowboyController : MonoBehaviour
             isWalkingRight = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space)) 
+        if (Input.GetKeyDown(KeyCode.Space) && characterController.transform.position.y < 1.0f) 
             {
                 animationController.SetBool("isJumpingForwards", true);
+                verticalVelocity = jumpForce;
                 velocity += .5f;
-                    if(velocity > walking_velocity*3.0f){
-                        velocity = walking_velocity*3.0f;
+                    if(velocity > walking_velocity*1.5){
+                        velocity = walking_velocity*1.5f;
                     }
             }
-        else if (Input.GetKey(KeyCode.B)){
+        else if (Input.GetKeyDown(KeyCode.B)){
             animationController.SetBool("isBackstepJump", true);
             velocity -= .5f;
-                if(velocity < -1.0f * walking_velocity*3.0f){
-                    velocity = -1.0f * walking_velocity*3.0f;
+                if(velocity < -1.0f * walking_velocity*1.5f){
+                    velocity = -1.0f * walking_velocity*1.5f;
                 }
         }
         else{

@@ -25,29 +25,23 @@ public class ThirdPersonCameraWithPlayerControl : MonoBehaviour
         currentY = Mathf.Clamp(currentY, minY, maxY);
     }
 
-void LateUpdate()
-{
-    if (target != null)
+    void LateUpdate()
     {
-        Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
-        Vector3 desiredPosition = target.position + rotation * new Vector3(0, heightOffset, -distance);
-
-        // Check for obstacles
-        RaycastHit hit;
-        if (Physics.Linecast(target.position + Vector3.up * heightOffset, desiredPosition, out hit))
+        if (target != null)
         {
-            transform.position = hit.point;
-        }
-        else
-        {
-            transform.position = desiredPosition;
-        }
+            // Calculate the new position and rotation for the camera
+            Quaternion rotation = Quaternion.Euler(currentY, currentX, 0);
+            Vector3 direction = new Vector3(0, heightOffset, -distance);
+            Vector3 position = target.position + rotation * direction;
 
-        transform.LookAt(target.position + Vector3.up * heightOffset);
+            // Set the camera position and look at the target
+            transform.position = position;
+            transform.LookAt(target.position + Vector3.up * heightOffset);
 
-        Vector3 targetForward = new Vector3(transform.forward.x, 0, transform.forward.z).normalized;
-        Quaternion targetRotation = Quaternion.LookRotation(targetForward);
-        target.rotation = Quaternion.Slerp(target.rotation, targetRotation, rotationSmoothTime);
+            // Rotate the player to match the camera's horizontal rotation
+            Vector3 targetForward = new Vector3(transform.forward.x, 0, transform.forward.z).normalized;
+            Quaternion targetRotation = Quaternion.LookRotation(targetForward);
+            target.rotation = Quaternion.Slerp(target.rotation, targetRotation, rotationSmoothTime);
+        }
     }
-}
 }
