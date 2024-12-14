@@ -40,8 +40,6 @@ public class KeyCollector : MonoBehaviour
             }
         }
  
-
-        // will have 5 operator keys, 10 numbers, can change the amounts
         for (int i = 0; i < 15; i++) 
         {
             if (keySlotsTaken.Contains(i) && keySlotsTaken.IndexOf(i) < NUM_VALID_KEYS) 
