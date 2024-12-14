@@ -50,7 +50,7 @@ public class Pathfinding
     private Vector3 origin;
     public Pathfinding(int width, int height, Vector3 origin)
     {
-        grid = new Grid(width, height, 1.33f, origin);
+        grid = new Grid(width, height, 1f, origin);
         walls = new bool[width, height];
         this.origin = origin;
         for (int i = 0; i < width; i++) { 
@@ -215,20 +215,26 @@ public class Pathfinding
             walls[i,col] = true;
     }
 
-    public void generateWallDebug(Vector3 start, Vector3 end)
+    public void drawGridDebug()
     {
-        GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        int width = grid.getWidth();
+        int height = grid.getHeight();
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+            {
 
-        Vector3 midpoint = (start + end)/ 2;
+                Debug.DrawLine(grid.GetWorldPosition(x, y), grid.GetWorldPosition(x, y + 1), Color.blue, 100f);
+                Debug.DrawLine(grid.GetWorldPosition(x, y), grid.GetWorldPosition(x + 1, y), Color.blue, 100f);
+                if (walls[x, y])
+                {
+                    Debug.DrawLine(grid.GetWorldPosition(x, y), grid.GetWorldPosition(x + 1, y+1), Color.red, 100f);
+                }
 
-        plane.transform.position = midpoint;
-        Vector3 direction = end - start;
-        float dist = direction.magnitude;
 
-        plane.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-        plane.transform.localScale = new Vector3(dist, 1f, 1f);
+            }
+        Debug.DrawLine(grid.GetWorldPosition(0, height), grid.GetWorldPosition(width, height), Color.blue, 100f);
+        Debug.DrawLine(grid.GetWorldPosition(width, 0), grid.GetWorldPosition(width, height), Color.blue, 100f);
     }
-
     public void drawPathDebug(List<Vector3> path)
     {
         for (int i = 0; i < path.Count - 1; i++)

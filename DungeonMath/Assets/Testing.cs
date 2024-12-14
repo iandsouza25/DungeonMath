@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class Testing : MonoBehaviour
 {
-    public bool debug;
+    public bool pathDebug;
+    public bool gridDebug;
+
     private enum State
     {
         PATROL,
@@ -23,6 +25,8 @@ public class Testing : MonoBehaviour
     Vector3 patrolPosition;
     public GameObject waypoint1;
     public GameObject waypoint2;
+    public GameObject waypoint3;
+    public GameObject waypoint4;
     private GameObject[] patrol;
 
     private List<Vector3> search;
@@ -41,9 +45,106 @@ public class Testing : MonoBehaviour
 
     private void Start()
     {
-        pathfinding = new Pathfinding(100, 100, new Vector3(-0.8f, 0, -0.8f));
+        pathfinding = new Pathfinding(70, 46, new Vector3(-0.8f, 0, -0.8f));
 
-        patrol = new GameObject[] { waypoint1, waypoint2 };
+        //Main walls
+            //hall/kitchen dividing wall
+            pathfinding.placeWallVert(21, 0, 10);//lower
+            pathfinding.placeWallVert(21, 12, 22);//upper
+            //dining/treasure dividing wall
+            pathfinding.placeWallVert(21, 47, 58);//lower
+            pathfinding.placeWallVert(21, 60, 69);//upper
+            //center square
+            pathfinding.placeWallVert(6, 23, 47);//right
+            pathfinding.placeWallVert(31, 23, 34);//left lower
+            pathfinding.placeWallVert(31, 36, 47);//left upper
+            pathfinding.placeWallHoriz(47, 6, 31);//top
+            pathfinding.placeWallHoriz(23, 6, 32);//bottom
+        //hall
+            //benches
+            pathfinding.placeWallVert(5, 5, 9); //back row
+            pathfinding.placeWallVert(5, 14, 18);
+            pathfinding.placeWallVert(7, 5, 9); //second row
+            pathfinding.placeWallVert(7, 14, 18);
+            pathfinding.placeWallVert(9, 5, 9); //third row
+            pathfinding.placeWallVert(9, 14, 18);
+            pathfinding.placeWallVert(11, 5, 9); //fourth row
+            pathfinding.placeWallVert(11, 14, 18);
+            pathfinding.placeWallVert(13, 5, 9); //fifth row
+            pathfinding.placeWallVert(13, 14, 18);
+            pathfinding.placeWallVert(15, 5, 9); //front row
+            pathfinding.placeWallVert(15, 14, 18);
+            //table
+            pathfinding.placeWallVert(17, 10, 13);
+            pathfinding.placeWallVert(18, 10, 13);
+        //kitchen
+            //table
+            pathfinding.placeWallVert(26, 7, 14);
+            pathfinding.placeWallVert(27, 7, 14);
+            pathfinding.placeWallVert(28, 7, 14);
+            pathfinding.placeWallVert(29, 7, 14);
+            //cauldrons
+            pathfinding.placeWallHoriz(7, 33, 41);
+            //ovens
+            pathfinding.placeWallHoriz(0, 25, 31);
+            pathfinding.placeWallHoriz(1, 25, 31);
+            pathfinding.placeWallHoriz(0, 35, 41);
+            pathfinding.placeWallHoriz(1, 35, 41);
+        //barrels
+        //Big barrel by kitchen
+        pathfinding.placeWallVert(40, 13, 21);
+            pathfinding.placeWallVert(41, 13, 21);
+            //Side Wall Barrels
+            pathfinding.placeWallVert(44, 25, 29);
+            pathfinding.placeWallVert(45, 25, 29);
+            //Chest
+            pathfinding.placeWallVert(44, 32, 34);
+            pathfinding.placeWallVert(45, 32, 34);
+            //Side wall Barrels
+            pathfinding.placeWallVert(44, 38, 42);
+            pathfinding.placeWallVert(45, 38, 42);
+            //Big barrel by dining
+            pathfinding.placeWallHoriz(45, 39, 45);
+            pathfinding.placeWallHoriz(46, 39, 45);
+            //barrels in front of library
+            pathfinding.placeWallVert(39, 31, 34);
+            pathfinding.placeWallVert(34, 26, 30);
+            pathfinding.placeWallVert(34, 36, 39);
+        //dining
+        //table
+        pathfinding.placeWallHoriz(51, 26, 37);
+            pathfinding.placeWallHoriz(52, 26, 37);
+            pathfinding.placeWallHoriz(53, 26, 37);
+            pathfinding.placeWallHoriz(54, 26, 37);
+            pathfinding.placeWallHoriz(55, 26, 37);
+            //other table
+            pathfinding.placeWallHoriz(61, 26, 37);
+            pathfinding.placeWallHoriz(62, 26, 37);
+            pathfinding.placeWallHoriz(63, 26, 37);
+            pathfinding.placeWallHoriz(64, 26, 37);
+            //weapon rack
+            pathfinding.placeWallVert(43, 51, 63);
+        //treasure room
+            //chest
+            pathfinding.placeWallVert(9, 58, 60);
+            pathfinding.placeWallVert(10, 58, 60);
+        //library
+            pathfinding.placeWallVert(9, 29, 33);
+            pathfinding.placeWallVert(9, 37, 41);
+            pathfinding.placeWallVert(12, 29, 33);
+            pathfinding.placeWallVert(12, 37, 41);
+            pathfinding.placeWallVert(15, 29, 33);
+            pathfinding.placeWallVert(15, 37, 41);
+            pathfinding.placeWallVert(18, 29, 33);
+            pathfinding.placeWallVert(18, 37, 41);
+            pathfinding.placeWallVert(21, 29, 33);
+            pathfinding.placeWallVert(21, 37, 41);
+            pathfinding.placeWallVert(24, 29, 33);
+            pathfinding.placeWallVert(24, 37, 41);
+
+        if (gridDebug)  pathfinding.drawGridDebug(); 
+
+        patrol = new GameObject[] { waypoint1, waypoint2, waypoint3, waypoint4 };
         patrolPosition = getNextPatrolPosition();
     }
 
@@ -72,6 +173,7 @@ public class Testing : MonoBehaviour
                     Debug.Log("Caught player");
                     movement.StopMoving();
                     state = State.PATROL;
+                    break;
                 } else if (destinationReached(lastKnown))
                 {
                     Debug.Log("Lost player, beginning search");
@@ -169,7 +271,7 @@ public class Testing : MonoBehaviour
         if(path != null)
         {
             movement.ContinuePath(path);
-            pathfinding.drawPathDebug(path);
+            if(pathDebug) pathfinding.drawPathDebug(path);
         }
     }
 
@@ -198,7 +300,7 @@ public class Testing : MonoBehaviour
 
     private void searchForPlayer()
     {
-        if (debug)
+        if (pathDebug)
         {
             DrawDebugFOV();
         }
@@ -232,7 +334,7 @@ public class Testing : MonoBehaviour
         Vector3 right = Quaternion.AngleAxis(spread, Vector3.up) * playerDir;
         Vector3 npcBody = transform.position + Vector3.up * 1.5f; ;
 
-        if (debug)
+        if (pathDebug)
         {
             Debug.DrawRay(npcBody, playerDir * detectRange, Color.cyan, 0f);
             Debug.DrawRay(npcBody, left * detectRange, Color.cyan, 0f);

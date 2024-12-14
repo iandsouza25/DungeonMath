@@ -39,23 +39,9 @@ public class Grid{
 
         gridArray = new PathNode[width, height];
         debugTextArray = new TextMesh[width, height];
-
-
-        for (int x = 0; x < gridArray.GetLength(0); x++)
-            for(int y = 0; y < gridArray.GetLength(1); y++)
-            {
-
-                //debugTextArray[x,y] = placeTileText(gridArray[x, y].ToString(), GetWorldPosition(x, y) + new Vector3(cellSize, 0, cellSize) * .5f);
-                Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x, y + 1), Color.blue, 100f);
-                Debug.DrawLine(GetWorldPosition(x, y), GetWorldPosition(x + 1, y), Color.blue, 100f);
-
-            }
-        Debug.DrawLine(GetWorldPosition(0, height), GetWorldPosition(width, height), Color.blue, 100f);
-        Debug.DrawLine(GetWorldPosition(width, 0), GetWorldPosition(width, height), Color.blue, 100f);
-
     }
 
-    private Vector3 GetWorldPosition(int x, int y)
+    public Vector3 GetWorldPosition(int x, int y)
     {
         return new Vector3(x, 0, y) * this.cellSize + origin;
     }
