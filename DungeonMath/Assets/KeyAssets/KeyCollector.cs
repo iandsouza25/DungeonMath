@@ -34,8 +34,8 @@ public class KeyCollector : MonoBehaviour
 
         eqGenerator.GenerateEquation();
         List<string> missingKeys = eqGenerator.GetMissingKeys();
-        //Debug.Log(eqGenerator.GetEquation());
-        //Debug.Log(string.Join(", ", eqGenerator.GetMissingKeys()));
+        // Debug.Log(eqGenerator.GetEquation());
+        // Debug.Log(string.Join(", ", eqGenerator.GetMissingKeys()));
         int currentLevel = eqGenerator.currentLevel;
 
 
