@@ -44,7 +44,7 @@ public class EquationGenerator : MonoBehaviour
             removableIndices = new List<int>() {0,1,2,4}; //dont remove  = sign
         }
         else if (currentLevel == 2){
-            missingCount = 3; 
+            missingCount = 2; 
             operators = new string[] { "+", "-" };
             int A = Random.Range(1, maxNumber);
             int B = Random.Range(1, maxNumber);
@@ -87,7 +87,7 @@ public class EquationGenerator : MonoBehaviour
             //generate equation in format a op b op c op d = e
             //will have 3 missing parts
 
-            missingCount = 3;
+            missingCount = 2;
 
             operators = new string[] { "*", "/" };
 
@@ -152,7 +152,7 @@ public class EquationGenerator : MonoBehaviour
             //generate equation in format a op b op c op d op e = f
             //will have 4 missing parts
 
-            missingCount = 4;
+            missingCount = 2;
 
             string[] operators1 = new string[] { "+", "-" };
             string[] operators2 = new string[] { "*", "/" };
