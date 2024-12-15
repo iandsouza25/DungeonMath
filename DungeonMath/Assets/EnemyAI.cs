@@ -30,16 +30,21 @@ public class EnemyAI : MonoBehaviour
     private GameObject[] patrol;
     public float detectFOV;
     public float detectRange;
+
+    AudioSource audioSrc;
+    private float lastSoundTime;
+    private float soundCoolDown = 1f;
     private void Awake()
     {
         movement = GetComponent<EnemyMovement>();
         state = State.PATROL;
+        audioSrc = GetComponent<AudioSource>();
+        pathfinding = new Pathfinding(70, 46, new Vector3(-0.8f, 0, -0.8f));
+
     }
 
     private void Start()
     {
-        pathfinding = new Pathfinding(70, 46, new Vector3(-0.8f, 0, -0.8f));
-
         //Main walls
             //hall/kitchen dividing wall
             pathfinding.placeWallVert(21, 0, 10);//lower
@@ -156,6 +161,11 @@ public class EnemyAI : MonoBehaviour
                 break;
 
             case State.CHASE:
+                if(Time.time >= lastSoundTime + soundCoolDown) 
+                {
+                    audioSrc.Play();
+                    lastSoundTime = Time.time;
+                }
                 moveTo(lastKnown);
                 if (destinationReached(player.transform.position)) 
                 {
