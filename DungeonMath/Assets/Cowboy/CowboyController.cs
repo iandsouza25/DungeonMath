@@ -33,7 +33,7 @@ public class CowboyController : MonoBehaviour
 
 
     private float verticalVelocity; // Add this variable to manage vertical movement
-    private const float jumpForce = 5.0f; // Jump strength
+    private const float jumpForce = 7.0f; // Jump strength
 
     
 
@@ -141,7 +141,8 @@ public class CowboyController : MonoBehaviour
             isWalkingRight = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && characterController.transform.position.y < 1.0f) 
+        if (Input.GetKeyDown(KeyCode.Space) && characterController.transform.position.y < 0.8f) 
+
             {
                 animationController.SetBool("isJumpingForwards", true);
                 verticalVelocity = jumpForce;
