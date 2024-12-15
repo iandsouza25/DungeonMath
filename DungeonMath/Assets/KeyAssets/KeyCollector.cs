@@ -38,6 +38,10 @@ public class KeyCollector : MonoBehaviour
         Debug.Log(string.Join(", ", eqGenerator.GetMissingKeys()));
         int currentLevel = eqGenerator.currentLevel;
 
+        //testing stuff
+        List<string> sol = new List<string> {"4", "/", "2", "*", "1", "+", "2","-", "3", "=", "2"};
+        Debug.Log(eqGenerator.isEquationCorrect(sol));
+
 
         Queue<String> equationKeys = new Queue<String>();
         foreach (var key in missingKeys)

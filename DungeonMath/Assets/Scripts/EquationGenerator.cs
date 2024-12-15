@@ -214,15 +214,97 @@ public class EquationGenerator : MonoBehaviour
         partialEquation = string.Join(" ", parts);
     }
 
+    
+    // returns string in format ___ + 7 = 9
     public string GetEquation()
     {
+       
         return partialEquation;
     }
 
+    //returns List in format ["___", "+", "7", "=", "9"]
+    public List<string> GetEquationParts()
+    {
+        return parts;
+    }
+
+    //returns the keys that are necessary for level to be solved
     public List<string> GetMissingKeys()
     {
         return missingKeys;
     }
+
+    //takes in list of strings of full equation ex. ["1", "+", "2", "=", "3"]
+    public bool isEquationCorrect(List<string> fullEquation){
+        // a op b = c
+        if(currentLevel == 1 || currentLevel == 3){
+            if (fullEquation.Count != 5){
+                return false;
+            }
+            int a = int.Parse(fullEquation[0]);
+            int b = int.Parse(fullEquation[2]);
+            int c = int.Parse(fullEquation[4]);
+            string op = fullEquation[1];
+            int res = CalculateResult(a, b, op);
+            return res == c;
+        }
+        else if (currentLevel == 2 || currentLevel == 4){
+            // a op b op c op d = e
+            if (fullEquation.Count != 9){
+                return false;
+            }
+            int a = int.Parse(fullEquation[0]);
+            int b = int.Parse(fullEquation[2]);
+            int c = int.Parse(fullEquation[4]);
+            int d = int.Parse(fullEquation[6]);
+            int e = int.Parse(fullEquation[8]);
+
+            string op1 = fullEquation[1];
+            string op2 = fullEquation[3];
+            string op3 = fullEquation[5];
+
+            //prevent division by zero
+            if ((op1 == "/" && b == 0) || (op2 == "/" && c == 0) || (op3 == "/" && d == 0)){
+                return false;
+            }
+
+            int res1 = CalculateResult(a, b, op1);
+            int res2 = CalculateResult(res1, c, op2);
+            int res3 = CalculateResult(res2, d, op3);
+            return res3 == e;
+        }
+        else if (currentLevel == 5){
+            // a op b op c op d op e = f
+            if (fullEquation.Count != 11){
+                return false;
+            }
+            int a = int.Parse(fullEquation[0]);
+            int b = int.Parse(fullEquation[2]);
+            int c = int.Parse(fullEquation[4]);
+            int d = int.Parse(fullEquation[6]);
+            int e = int.Parse(fullEquation[8]);
+            int f = int.Parse(fullEquation[10]);
+
+            string op1 = fullEquation[1];
+            string op2 = fullEquation[3];
+            string op3 = fullEquation[5];
+            string op4 = fullEquation[7];
+
+            //prevent division by zero
+            if ((op1 == "/" && b == 0) || (op2 == "/" && c == 0) || (op3 == "/" && d == 0) || (op4 == "/" && e == 0)){
+                return false;
+            }
+
+            int res1 = CalculateResult(a, b, op1);
+            int res2 = CalculateResult(res1, c, op2);
+            int res3 = CalculateResult(res2, d, op3);
+            int res4 = CalculateResult(res3, e, op4);
+            return res4 == f;
+        }
+        return false;
+    }
+
+    
 
     private int CalculateResult(int A, int B, string op)
     {
@@ -231,7 +313,10 @@ public class EquationGenerator : MonoBehaviour
             case "+": return A + B;
             case "-": return A - B;
             case "*": return A * B;
-            case "/": return A / B;
+            case "/": 
+                if (B == 0){return -1000000000;}
+                else if (A % B == 0){return A / B;}
+                else          { return 0;}
         }
         return 0;
     }
