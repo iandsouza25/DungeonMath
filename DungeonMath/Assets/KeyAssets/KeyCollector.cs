@@ -8,7 +8,7 @@ using UnityEngine;
 public class KeyCollector : MonoBehaviour
 {
     // Start is called before the first frame update
-    public int NUM_VALID_KEYS;
+    private int NUM_VALID_KEYS;
     private const int TOTAL_KEYS = 15; 
     private List<String> keysCollected = new List<String>();
     // keyCollectingOrder list gets populated in Start(), it will contain the value of keys that will be collecting
@@ -34,8 +34,8 @@ public class KeyCollector : MonoBehaviour
 
         eqGenerator.GenerateEquation();
         List<string> missingKeys = eqGenerator.GetMissingKeys();
-        //Debug.Log(eqGenerator.GetEquation());
-        //Debug.Log(string.Join(", ", eqGenerator.GetMissingKeys()));
+        // Debug.Log(eqGenerator.GetEquation());
+        // Debug.Log(string.Join(", ", eqGenerator.GetMissingKeys()));
         int currentLevel = eqGenerator.currentLevel;
 
 
