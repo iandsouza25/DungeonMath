@@ -149,17 +149,13 @@ public class EnemyAI : MonoBehaviour
                 moveTo(patrolPosition);
                 if (destinationReached(patrolPosition))
                 {
-                    Debug.Log("Reached patrol position, pausing");
                     movement.StopMoving();
                     patrolPosition = getNextPatrolPosition();
-                    //get2RandomPositons();
-                    //state = State.SEARCH;
                 }
                 searchForPlayer();
                 break;
 
             case State.CHASE:
-                Debug.Log("Chasing...");
                 moveTo(lastKnown);
                 if (destinationReached(player.transform.position)) 
                 {
@@ -169,10 +165,7 @@ public class EnemyAI : MonoBehaviour
                     break;
                 } else if (destinationReached(lastKnown))
                 {
-                    Debug.Log("Lost player, beginning search");
                     movement.StopMoving();
-                    //get2RandomPositons();
-                    //state = State.SEARCH;
                     state = State.PATROL;
                 }
                 searchForPlayer();
@@ -232,7 +225,6 @@ public class EnemyAI : MonoBehaviour
     {
        if (Vector3.Distance(transform.position, goal) < 0.5f)
         {
-            Debug.Log("Destination Reached");
             return true;
         }
         else
@@ -271,7 +263,6 @@ public class EnemyAI : MonoBehaviour
         if (dirToPlayer.magnitude > detectRange || angleToPlayer > detectFOV/2) return false; //player is out of view and/or range
 
         if (checkLinesOfSight(dirToPlayer,dirToLegs)) return true;
-        Debug.Log("Raycast fail, cannot see player"); 
         return false;
     }
 
@@ -295,8 +286,7 @@ public class EnemyAI : MonoBehaviour
         foreach (Ray r in rays)
         {
             Physics.Raycast(r, out RaycastHit hit, detectRange);
-            Debug.Log(hit.collider.name);
-            if ( hit.collider.name == player.name)
+            if ( hit.transform == player.transform)
             {
                 playerHit = true;
             }

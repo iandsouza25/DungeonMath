@@ -1418,7 +1418,7 @@ MonoBehaviour:
   waypoint2: {fileID: 2074282437}
   waypoint3: {fileID: 574769164}
   detectFOV: 90
-  detectRange: 10
+  detectRange: 15
 --- !u!4 &53114934 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1676609100239073865, guid: 0d780173c250d334f80c9061373c8e4f, type: 3}
@@ -12878,7 +12878,7 @@ MonoBehaviour:
   waypoint2: {fileID: 434616958}
   waypoint3: {fileID: 434408678}
   detectFOV: 90
-  detectRange: 10
+  detectRange: 15
 --- !u!1001 &426925704
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19749,9 +19749,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 112068, guid: 93f8a13fb89985e4f8d0d8ecff94969a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1059561513}
-    - targetCorrespondingSourceObject: {fileID: 112068, guid: 93f8a13fb89985e4f8d0d8ecff94969a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1059561517}
   m_SourcePrefab: {fileID: 100100000, guid: 93f8a13fb89985e4f8d0d8ecff94969a, type: 3}
 --- !u!1001 &640749065
 PrefabInstance:
@@ -31249,7 +31246,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1151336573}
+    m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 7447022692854842267, guid: 6b07ab31d47036645833e234477aa56f, type: 3}
       propertyPath: m_LocalScale.x
@@ -31314,10 +31311,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7447022692855013307, guid: 6b07ab31d47036645833e234477aa56f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2118773683}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b07ab31d47036645833e234477aa56f, type: 3}
 --- !u!1001 &1032013311
 PrefabInstance:
@@ -33410,7 +33404,7 @@ MonoBehaviour:
   waypoint2: {fileID: 1416799107}
   waypoint3: {fileID: 940903977}
   detectFOV: 90
-  detectRange: 10
+  detectRange: 15
 --- !u!1001 &1097569875
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -64407,3 +64401,4 @@ SceneRoots:
   - {fileID: 565937539}
   - {fileID: 721876599}
   - {fileID: 1387276285}
+  - {fileID: 1028135173}
