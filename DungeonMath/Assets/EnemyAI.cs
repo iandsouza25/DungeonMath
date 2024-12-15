@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Testing : MonoBehaviour
+public class EnemyAI : MonoBehaviour
 {
     public bool pathDebug;
     public bool gridDebug;
@@ -26,15 +26,8 @@ public class Testing : MonoBehaviour
     public GameObject waypoint1;
     public GameObject waypoint2;
     public GameObject waypoint3;
-    public GameObject waypoint4;
+  
     private GameObject[] patrol;
-
-    private List<Vector3> search;
-    private Vector3 currentSearch;
-    public float searchRadius;
-    public float searchTime;
-    private float searchClock;
-
     public float detectFOV;
     public float detectRange;
     private void Awake()
@@ -144,7 +137,7 @@ public class Testing : MonoBehaviour
 
         if (gridDebug)  pathfinding.drawGridDebug(); 
 
-        patrol = new GameObject[] { waypoint1, waypoint2, waypoint3, waypoint4 };
+        patrol = new GameObject[] { waypoint1, waypoint2, waypoint3};
         patrolPosition = getNextPatrolPosition();
     }
 
@@ -184,59 +177,9 @@ public class Testing : MonoBehaviour
                 }
                 searchForPlayer();
                 break;
-
-            case State.SEARCH:
-                moveTo(currentSearch);
-                if (destinationReached(currentSearch))
-                {
-                    Debug.Log("Searched position, moving on...");
-                    if (search.Count <= 0)
-                    {
-                        Debug.Log("Out of positions to search");
-                        state = State.PATROL;
-                    }
-                    getNextSearchPosition();
-                }
-                break;
         }
 
     
-    }
-
-    private void get2RandomPositons()
-    {
-        Vector3 origin = transform.position;
-        Vector3 pos1 = new Vector3(origin.x + Random.Range(-searchRadius, searchRadius), 0, origin.z + Random.Range(-searchRadius, searchRadius));
-        Vector3 pos2 = new Vector3(origin.x + Random.Range(-searchRadius, searchRadius), 0, origin.z + Random.Range(-searchRadius, searchRadius));
-
-        List<Vector3> testPath = pathfinding.FindPath(transform.position, pos1);
-        while(testPath == null)
-        {
-            pos1 = new Vector3(origin.x + Random.Range(-searchRadius, searchRadius), 0, origin.z + Random.Range(-searchRadius, searchRadius));
-            testPath = pathfinding.FindPath(transform.position, pos1);
-        }
-        testPath = pathfinding.FindPath(transform.position, pos2);
-        while(testPath == null)
-        {
-            pos2 = new Vector3(origin.x + Random.Range(-searchRadius, searchRadius), 0, origin.z + Random.Range(-searchRadius, searchRadius));
-            testPath = pathfinding.FindPath(transform.position, pos2);
-        }
-
-        search = new List<Vector3> { pos1, pos2 };
-        getNextSearchPosition();
-    }
-
-
-
-    private void getNextSearchPosition()
-    {
-        if(search.Count <= 0)
-        {
-            state = State.PATROL;
-            return;
-        }
-        currentSearch = search[0];
-        search.RemoveAt(0);
     }
 
     private Vector3 getNextPatrolPosition()
@@ -316,45 +259,44 @@ public class Testing : MonoBehaviour
 
     private bool canSeePlayer()
     {
-        Vector3 playerBody = player.transform.position + Vector3.up * 1f;
-        Vector3 npcBody = transform.position + Vector3.up * 1.5f; ;
+        Collider playerCollider = player.GetComponent<Collider>();
+
+        Vector3 playerBody = player.transform.position; playerBody.y = 0.8f;
+        Vector3 npcBody = transform.position; npcBody.y = 0.8f;
+        Vector3 playerLegs = player.transform.position; playerLegs.y = 0.2f; ;
+        Vector3 npcLegs = transform.position; npcLegs.y = 0.2f;
         Vector3 dirToPlayer = playerBody - npcBody;
+        Vector3 dirToLegs = playerLegs - npcLegs;
         float angleToPlayer = Vector3.Angle(transform.forward, dirToPlayer);
         if (dirToPlayer.magnitude > detectRange || angleToPlayer > detectFOV/2) return false; //player is out of view and/or range
 
-        if (checkLinesOfSight(dirToPlayer)) return true;
+        if (checkLinesOfSight(dirToPlayer,dirToLegs)) return true;
         Debug.Log("Raycast fail, cannot see player"); 
         return false;
     }
 
-    private bool checkLinesOfSight(Vector3 playerDir)
+    private bool checkLinesOfSight(Vector3 playerBody, Vector3 playerLegs)
     {
-        float spread = 5f;
-        Vector3 left = Quaternion.AngleAxis(-spread, Vector3.up) * playerDir;
-        Vector3 right = Quaternion.AngleAxis(spread, Vector3.up) * playerDir;
-        Vector3 npcBody = transform.position + Vector3.up * 1.5f; ;
+        Vector3 npcBody = transform.position + Vector3.up * 1.5f;
+        Vector3 npcLegs = transform.position + Vector3.up * 0.5f;
+        Ray lineOfSight = new Ray(npcBody, playerBody);
+        Ray lowerLineOfSight = new Ray(npcLegs, playerLegs);
 
         if (pathDebug)
         {
-            Debug.DrawRay(npcBody, playerDir * detectRange, Color.cyan, 0f);
-            Debug.DrawRay(npcBody, left * detectRange, Color.cyan, 0f);
-            Debug.DrawRay(npcBody, right * detectRange, Color.cyan, 0f);
+            Debug.DrawRay(npcBody, playerBody * detectRange, Color.cyan, 0f);
+            Debug.DrawRay(npcLegs, playerLegs * detectRange, Color.cyan, 0f);
         }
 
-
-        Ray lineOfSight = new Ray(npcBody, playerDir);
-        Ray leftRay = new Ray(npcBody, left);
-        Ray rightRay = new Ray(npcBody, right);
-
-
-        Ray[] rays = new Ray[] { lineOfSight, leftRay, rightRay };
-        bool playerHit = false;
+        Ray[] rays = new Ray[] { lineOfSight, lowerLineOfSight };
         Collider playerCollider = player.GetComponent<Collider>();
 
-
-        foreach(Ray r in rays)
+        bool playerHit = false;
+        foreach (Ray r in rays)
         {
-            if(Physics.Raycast(r, out RaycastHit hit, detectRange) && hit.transform == player.transform)
+            Physics.Raycast(r, out RaycastHit hit, detectRange);
+            Debug.Log(hit.collider.name);
+            if ( hit.collider.name == player.name)
             {
                 playerHit = true;
             }
