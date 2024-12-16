@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class EnemyAI : MonoBehaviour
 {
+    public TMP_Text caughtMessageText;
+    public CharacterController controller;
     public bool pathDebug;
     public bool gridDebug;
 
@@ -170,9 +173,7 @@ public class EnemyAI : MonoBehaviour
                 moveTo(lastKnown);
                 if (destinationReached(player.transform.position)) 
                 {
-                    Debug.Log("Caught player");
-                    movement.StopMoving();
-                    SceneManager.LoadScene(1);
+                    StartCoroutine(DisplayCaughtMessage());
                     break;
                 } else if (destinationReached(lastKnown))
                 {
@@ -316,6 +317,18 @@ public class EnemyAI : MonoBehaviour
         Debug.DrawLine(transform.position, transform.position + leftBoundary, Color.yellow,0f);
         Debug.DrawLine(transform.position, transform.position + rightBoundary, Color.yellow,0f);
 
+    }
+
+    private IEnumerator DisplayCaughtMessage()
+    {
+        caughtMessageText.gameObject.SetActive(true); // Show the message
+        caughtMessageText.text = "YOU'VE BEEN CAUGHT! RESETTING THE LEVEL...";
+        movement.StopMoving();
+        controller.enabled = false;
+        
+        yield return new WaitForSeconds(3);
+        caughtMessageText.gameObject.SetActive(false);
+        SceneManager.LoadScene(1);
     }
 
 }
