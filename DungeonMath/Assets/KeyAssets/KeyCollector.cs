@@ -21,11 +21,18 @@ public class KeyCollector : MonoBehaviour
 
     public InventoryManager inventorymanager;
 
+    public AudioClip keyCollectionSound; // The sound to play when a key is collected
+    private AudioSource audioSource;    // Reference to the AudioSource
+
     // Everything in the Start function will be moved to a new function once I 
     void Start()
     {
 
-
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
         //check for instance of equation generator
         EquationGenerator eqGenerator = FindObjectOfType<EquationGenerator>();
         if (eqGenerator == null)
@@ -87,6 +94,11 @@ public class KeyCollector : MonoBehaviour
             Destroy(other.gameObject);
             keysCollected.Add(keyCollectingOrder[currentIndex++]);
             Debug.Log(keysCollected.Last());
+            if (keyCollectionSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(keyCollectionSound);
+            }
+
             //updated inventory
             inventorymanager.AddInventory(GetKeysCollected());
         }

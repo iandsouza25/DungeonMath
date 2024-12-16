@@ -24,7 +24,6 @@ public class CowboyController : MonoBehaviour
     public float health;
     public bool has_won;
 
-    private bool isDead;
 
     private bool isWalkingBackwards;
     private bool isWalkingForwards;
@@ -35,17 +34,21 @@ public class CowboyController : MonoBehaviour
     private float verticalVelocity; // Add this variable to manage vertical movement
     private const float jumpForce = 7.0f; // Jump strength
 
+    public AudioClip[] footstepClips; // Array of footstep sounds
+    private AudioSource audioSource;
+    private float footstepTimer = 0f; // Timer to control footstep intervals
+    public float footstepInterval = 0.5f; // Time interval between footsteps
+
     
 
 
     // Start is called before the first frame update
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         animationController = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
         velocity = 0.0f;
-        has_won = false;
-        isDead = false;
         health = 100.0f;
         movementDirection = new Vector3(0.0f, 0.0f, 0.0f);
 
@@ -57,33 +60,8 @@ public class CowboyController : MonoBehaviour
 
 
     void Update(){
-        if (health <= 0.0f){
-            health = 0.0f;
-            animationController.SetBool("isBackstepJump", false);
-            animationController.SetBool("isJumpingForwards", false);
-            animationController.SetBool("Idle", false);
-            animationController.SetBool("isWalkingForwards", false);
-            animationController.SetBool("isWalkingBackwards", false);
-            animationController.SetBool("isWalkingLeft", false);
-            animationController.SetBool("isWalkingRight", false);
-            animationController.SetBool("isRunning", false);
-            animationController.SetBool("isCrouch", false);
+        Move();
 
-        }
-
-        if (health <= 0.0f && !isDead){
-            // DeathStat();
-            Debug.Log("You died!");
-        }
-
-        else if (!isDead){
-            if(has_won){
-                Debug.Log("You won!");
-            }
-            else{
-                Move();
-            }
-        }
         bool is_crouching = false;
         if ( (animationController.GetCurrentAnimatorStateInfo(0).IsName("isCrouch")))
             {
@@ -121,7 +99,6 @@ public class CowboyController : MonoBehaviour
     }
 
     void Move(){
-        if (health > 0.0f){
             animationController.SetBool("isBackstepJump", false);
             animationController.SetBool("isJumpingForwards", false);
             animationController.SetBool("Idle", false);
@@ -139,7 +116,6 @@ public class CowboyController : MonoBehaviour
             isWalkingForwards = false;
             isWalkingLeft = false;
             isWalkingRight = false;
-        }
 
         if (Input.GetKeyDown(KeyCode.Space) && characterController.transform.position.y < 0.8f) 
 
@@ -240,7 +216,31 @@ public class CowboyController : MonoBehaviour
                 velocity = 0f;
             }
         }
+
+
+        if (isWalkingForwards || isWalkingBackwards || isWalkingLeft || isWalkingRight)
+        {
+            footstepTimer += Time.deltaTime;
+            if (footstepTimer >= footstepInterval)
+            {
+                PlayFootstep();
+                footstepTimer = 0f;
+            }
+        }
+        else
+        {
+            footstepTimer = 0f; // Reset timer when not moving
+        }
     }
 
+
+    private void PlayFootstep()
+    {
+        if (footstepClips.Length > 0)
+        {
+            int randomIndex = Random.Range(0, footstepClips.Length);
+            audioSource.PlayOneShot(footstepClips[randomIndex]);
+        }
+    }
     
 }
