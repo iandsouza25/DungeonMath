@@ -5,12 +5,15 @@ using TMPro;
 
 public class changeText : MonoBehaviour
 {
-    public EquationGenerator equationgenerator;
+    private EquationGenerator equationgenerator;
     public TextMeshProUGUI equationText;
 
      void Start()
     {   
-        StartCoroutine(UpdateTextAfterDelay(1f));
+  
+        equationgenerator = FindObjectOfType<EquationGenerator>();
+
+        StartCoroutine(UpdateTextAfterDelay(0.2f));
     }
 
     IEnumerator UpdateTextAfterDelay(float delay)

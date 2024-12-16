@@ -2052,7 +2052,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f7a7d77e54124d7fa02ac35120360a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  equationgenerator: {fileID: 497132594}
   equationText: {fileID: 71466062}
 --- !u!114 &71466062
 MonoBehaviour:
@@ -24883,7 +24882,6 @@ MonoBehaviour:
   slots:
   - {fileID: 248108827}
   - {fileID: 239610311}
-  equationgenerator: {fileID: 497132594}
 --- !u!114 &730991792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40433,6 +40431,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvas: {fileID: 2096025025}
   other: {fileID: 1202114405}
+  slot: {fileID: 239610311}
 --- !u!65 &1202114405
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -56034,7 +56033,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1712876766}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 730991791}
+        m_TargetAssemblyTypeName: LockManager, Assembly-CSharp
+        m_MethodName: CheckSolution
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1712876766
 MonoBehaviour:
   m_ObjectHideFlags: 0

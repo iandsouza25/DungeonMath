@@ -236,9 +236,19 @@ public class EquationGenerator : MonoBehaviour
     //takes in list of strings of full equation ex. ["1", "+", "2", "=", "3"]
     public bool isEquationCorrect(List<string> fullEquation){
         int currentLevel = GameManager.currentLevel;
+        bool IsValidInt(string str) => int.TryParse(str, out _);
+        bool IsValidOperator(string str) => str == "+" || str == "-" || str == "*" || str == "/";
+
         // a op b = c
         if(currentLevel == 1 || currentLevel == 3){
             if (fullEquation.Count != 5){
+                return false;
+            }
+            //formatting check
+            if (!IsValidInt(fullEquation[0]) || !IsValidOperator(fullEquation[1]) || 
+            !IsValidInt(fullEquation[2]) || fullEquation[3] != "=" || 
+            !IsValidInt(fullEquation[4]))
+            {
                 return false;
             }
             int a = int.Parse(fullEquation[0]);
@@ -253,6 +263,16 @@ public class EquationGenerator : MonoBehaviour
             if (fullEquation.Count != 9){
                 return false;
             }
+            if (!IsValidInt(fullEquation[0]) || !IsValidOperator(fullEquation[1]) || 
+            !IsValidInt(fullEquation[2]) || !IsValidOperator(fullEquation[3]) || 
+            !IsValidInt(fullEquation[4]) || !IsValidOperator(fullEquation[5]) || 
+            !IsValidInt(fullEquation[6]) || fullEquation[7] != "=" || 
+            !IsValidInt(fullEquation[8]))
+            {
+                return false;
+            }
+
+
             int a = int.Parse(fullEquation[0]);
             int b = int.Parse(fullEquation[2]);
             int c = int.Parse(fullEquation[4]);
@@ -278,6 +298,17 @@ public class EquationGenerator : MonoBehaviour
             if (fullEquation.Count != 11){
                 return false;
             }
+
+            if (!IsValidInt(fullEquation[0]) || !IsValidOperator(fullEquation[1]) || 
+            !IsValidInt(fullEquation[2]) || !IsValidOperator(fullEquation[3]) || 
+            !IsValidInt(fullEquation[4]) || !IsValidOperator(fullEquation[5]) || 
+            !IsValidInt(fullEquation[6]) || !IsValidOperator(fullEquation[7]) || 
+            !IsValidInt(fullEquation[8]) || fullEquation[9] != "=" || 
+            !IsValidInt(fullEquation[10]))
+            {
+                return false;
+            }
+
             int a = int.Parse(fullEquation[0]);
             int b = int.Parse(fullEquation[2]);
             int c = int.Parse(fullEquation[4]);
