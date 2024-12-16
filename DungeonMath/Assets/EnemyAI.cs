@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EnemyAI : MonoBehaviour
 {
@@ -171,7 +172,7 @@ public class EnemyAI : MonoBehaviour
                 {
                     Debug.Log("Caught player");
                     movement.StopMoving();
-                    state = State.PATROL;
+                    SceneManager.LoadScene(1);
                     break;
                 } else if (destinationReached(lastKnown))
                 {
