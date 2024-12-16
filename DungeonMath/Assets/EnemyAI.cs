@@ -32,8 +32,8 @@ public class EnemyAI : MonoBehaviour
     public GameObject waypoint3;
   
     private GameObject[] patrol;
-    public float detectFOV;
-    public float detectRange;
+    private float detectFOV = 135;
+    private float detectRange = 15;
 
     AudioSource audioSrc;
     private float lastSoundTime;
@@ -49,6 +49,30 @@ public class EnemyAI : MonoBehaviour
 
     private void Start()
     {
+        switch (GameManager.currentLevel)
+        {
+            case 1:
+                Debug.Log("Difficulty 1");
+                movement.setRunSpeed(0.05f);
+                break;
+            case 2:
+                Debug.Log("Difficulty 2");
+                movement.setRunSpeed(0.075f);
+                break;
+            case 3:
+                Debug.Log("Difficulty 3");
+                movement.setRunSpeed(0.1f);
+                break;
+            case 4:
+                Debug.Log("Difficulty 4");
+                movement.setRunSpeed(0.15f);
+                break;
+            case 5:
+                Debug.Log("Difficulty 5");
+                movement.setRunSpeed(0.15f);
+                detectRange = 20;
+                break;
+        }
         //Main walls
             //hall/kitchen dividing wall
             pathfinding.placeWallVert(21, 0, 10);//lower
@@ -178,6 +202,7 @@ public class EnemyAI : MonoBehaviour
                 } else if (destinationReached(lastKnown))
                 {
                     movement.StopMoving();
+                    movement.startWalking();
                     state = State.PATROL;
                 }
                 searchForPlayer();
@@ -255,6 +280,7 @@ public class EnemyAI : MonoBehaviour
         {
             Debug.Log("Player Spotted");
             lastKnown = player.transform.position;
+            movement.startRunning();
             state = State.CHASE;
         }
     }
