@@ -61,10 +61,10 @@ public class LockManager : MonoBehaviour
                 Debug.Log("You won!");
                 if (GameManager.currentLevel < 5) {
                     GameManager.currentLevel++;
-                    SceneManager.LoadScene(0);
+                    SceneManager.LoadScene(1);
                 }
                 else if (GameManager.currentLevel == 5) {
-                    Debug.Log("You won the game!");
+                    SceneManager.LoadScene(2);
                 }
             }
             else {
