@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
+
 public class KeyCollector : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -36,7 +37,7 @@ public class KeyCollector : MonoBehaviour
         List<string> missingKeys = eqGenerator.GetMissingKeys();
         // Debug.Log(eqGenerator.GetEquation());
         // Debug.Log(string.Join(", ", eqGenerator.GetMissingKeys()));
-        int currentLevel = eqGenerator.currentLevel;
+        int currentLevel = GameManager.currentLevel;
 
 
 

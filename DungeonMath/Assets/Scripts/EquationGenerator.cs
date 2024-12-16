@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class EquationGenerator : MonoBehaviour
 {
-    
-    public int currentLevel = 1;
     private string fullEquation;
 
     private string partialEquation;
@@ -21,6 +19,7 @@ public class EquationGenerator : MonoBehaviour
 
     public void GenerateEquation()
     {
+        int currentLevel = GameManager.currentLevel;
         missingKeys.Clear();
         parts.Clear();
         removableIndices.Clear();
@@ -236,6 +235,7 @@ public class EquationGenerator : MonoBehaviour
 
     //takes in list of strings of full equation ex. ["1", "+", "2", "=", "3"]
     public bool isEquationCorrect(List<string> fullEquation){
+        int currentLevel = GameManager.currentLevel;
         // a op b = c
         if(currentLevel == 1 || currentLevel == 3){
             if (fullEquation.Count != 5){
