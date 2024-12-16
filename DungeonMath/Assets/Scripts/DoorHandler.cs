@@ -5,26 +5,25 @@ using UnityEngine;
 public class DoorHandler : MonoBehaviour
 {
     public GameObject canvas;
-    private bool canvasActive = false;
-    // wip
-    // Start is called before the first frame update
-    void Start()
+    public Collider other;
+
+    private void OnTriggerEnter(Collider other)
     {
-        if (canvas != null)
-        {
-            canvas.SetActive(false);  
-        }
+        if (other.CompareTag("Player")) 
+    {
+    // Show Door UI
+        canvas.SetActive(true);
+    } 
+
     }
 
-    // Update is called once per frame
-     void Update()
+    private void OnTriggerExit(Collider other)
     {
-        if (Input.GetKeyDown(KeyCode.E))  
-        {
-            if (canvas != null) {
-                canvasActive = !canvasActive;  
-                canvas.SetActive(canvasActive);  
-            }
-        }
+    if (other.CompareTag("Player")) 
+    {
+    // Show Door UI
+        canvas.SetActive(false);
+    }   
+
     }
 }
