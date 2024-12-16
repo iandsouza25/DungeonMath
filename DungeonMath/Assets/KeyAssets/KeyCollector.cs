@@ -19,6 +19,7 @@ public class KeyCollector : MonoBehaviour
     private static readonly System.Random rnd = new System.Random();
     private int currentIndex = 0;
 
+    public InventoryManager inventorymanager;
 
     // Everything in the Start function will be moved to a new function once I 
     void Start()
@@ -86,6 +87,8 @@ public class KeyCollector : MonoBehaviour
             Destroy(other.gameObject);
             keysCollected.Add(keyCollectingOrder[currentIndex++]);
             Debug.Log(keysCollected.Last());
+            //updated inventory
+            inventorymanager.AddInventory(GetKeysCollected());
         }
     }
 
