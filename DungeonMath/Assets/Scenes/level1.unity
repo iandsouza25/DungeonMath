@@ -1706,9 +1706,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8d4f245e64acae4e82fad5622e0e3aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 0.5
-  runSpeed: 0
-  rotationSpeed: 50
+  rotationSpeed: 100
 --- !u!114 &52102540
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1729,8 +1727,6 @@ MonoBehaviour:
   waypoint1: {fileID: 1496357719}
   waypoint2: {fileID: 2074282437}
   waypoint3: {fileID: 574769164}
-  detectFOV: 90
-  detectRange: 15
 --- !u!82 &52102543
 AudioSource:
   m_ObjectHideFlags: 0
@@ -14548,8 +14544,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8d4f245e64acae4e82fad5622e0e3aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 0.5
-  runSpeed: 0
   rotationSpeed: 50
 --- !u!114 &425163981
 MonoBehaviour:
@@ -14571,8 +14565,6 @@ MonoBehaviour:
   waypoint1: {fileID: 1417346120}
   waypoint2: {fileID: 434616958}
   waypoint3: {fileID: 434408678}
-  detectFOV: 90
-  detectRange: 15
 --- !u!82 &425163984
 AudioSource:
   m_ObjectHideFlags: 0
@@ -38098,8 +38090,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8d4f245e64acae4e82fad5622e0e3aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 0.5
-  runSpeed: 0
   rotationSpeed: 50
 --- !u!114 &1095966079
 MonoBehaviour:
@@ -38121,8 +38111,6 @@ MonoBehaviour:
   waypoint1: {fileID: 1367537401}
   waypoint2: {fileID: 1416799107}
   waypoint3: {fileID: 940903977}
-  detectFOV: 90
-  detectRange: 15
 --- !u!82 &1095966082
 AudioSource:
   m_ObjectHideFlags: 0
