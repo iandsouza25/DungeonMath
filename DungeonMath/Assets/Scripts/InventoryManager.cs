@@ -24,7 +24,7 @@ public class InventoryManager : MonoBehaviour
         Debug.Log(val[0]);
         for (int i = 0; i < val.Count; i++) {
             if (slots[i].transform.childCount > 0) {
-                TextMeshProUGUI keyText = GetComponentInChildren<TextMeshProUGUI>();
+                TextMeshProUGUI keyText = slots[i].transform.GetComponentInChildren<TextMeshProUGUI>();
                 if (keyText.text == "") {
                     keyText.text = val[i];
                 }
