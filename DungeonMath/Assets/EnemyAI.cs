@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class EnemyAI : MonoBehaviour
 {
+    public TMP_Text caughtMessageText;
+    public CharacterController controller;
     public bool pathDebug;
     public bool gridDebug;
 
@@ -29,8 +32,8 @@ public class EnemyAI : MonoBehaviour
     public GameObject waypoint3;
   
     private GameObject[] patrol;
-    public float detectFOV;
-    public float detectRange;
+    private float detectFOV = 135;
+    private float detectRange = 15;
 
     AudioSource audioSrc;
     private float lastSoundTime;
@@ -46,6 +49,30 @@ public class EnemyAI : MonoBehaviour
 
     private void Start()
     {
+        switch (GameManager.currentLevel)
+        {
+            case 1:
+                Debug.Log("Difficulty 1");
+                movement.setRunSpeed(0.05f);
+                break;
+            case 2:
+                Debug.Log("Difficulty 2");
+                movement.setRunSpeed(0.075f);
+                break;
+            case 3:
+                Debug.Log("Difficulty 3");
+                movement.setRunSpeed(0.1f);
+                break;
+            case 4:
+                Debug.Log("Difficulty 4");
+                movement.setRunSpeed(0.15f);
+                break;
+            case 5:
+                Debug.Log("Difficulty 5");
+                movement.setRunSpeed(0.15f);
+                detectRange = 20;
+                break;
+        }
         //Main walls
             //hall/kitchen dividing wall
             pathfinding.placeWallVert(21, 0, 10);//lower
@@ -170,13 +197,12 @@ public class EnemyAI : MonoBehaviour
                 moveTo(lastKnown);
                 if (destinationReached(player.transform.position)) 
                 {
-                    Debug.Log("Caught player");
-                    movement.StopMoving();
-                    SceneManager.LoadScene(1);
+                    StartCoroutine(DisplayCaughtMessage());
                     break;
                 } else if (destinationReached(lastKnown))
                 {
                     movement.StopMoving();
+                    movement.startWalking();
                     state = State.PATROL;
                 }
                 searchForPlayer();
@@ -254,6 +280,7 @@ public class EnemyAI : MonoBehaviour
         {
             Debug.Log("Player Spotted");
             lastKnown = player.transform.position;
+            movement.startRunning();
             state = State.CHASE;
         }
     }
@@ -316,6 +343,18 @@ public class EnemyAI : MonoBehaviour
         Debug.DrawLine(transform.position, transform.position + leftBoundary, Color.yellow,0f);
         Debug.DrawLine(transform.position, transform.position + rightBoundary, Color.yellow,0f);
 
+    }
+
+    private IEnumerator DisplayCaughtMessage()
+    {
+        caughtMessageText.gameObject.SetActive(true); // Show the message
+        caughtMessageText.text = "YOU'VE BEEN CAUGHT! RESETTING THE LEVEL...";
+        movement.StopMoving();
+        controller.enabled = false;
+        
+        yield return new WaitForSeconds(3);
+        caughtMessageText.gameObject.SetActive(false);
+        SceneManager.LoadScene(1);
     }
 
 }

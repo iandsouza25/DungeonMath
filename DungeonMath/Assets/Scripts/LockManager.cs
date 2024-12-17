@@ -6,6 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class LockManager : MonoBehaviour
 {
+    public CharacterController controller;
+    public TMP_Text text;
     public GameObject[] slots; 
     private EquationGenerator equationgenerator;
     private List<string> solution = new List<string>();
@@ -40,8 +42,10 @@ public class LockManager : MonoBehaviour
         // Debug.Log(item);
         // }
         }
-        if (solution.Contains("")) {
-            Debug.Log("missingParameter");
+        if (solution.Contains("")) 
+        {
+            text.color = Color.white;
+            text.text = "You're missing a Key!";
         }
         else {
             int j = 0;
@@ -58,22 +62,38 @@ public class LockManager : MonoBehaviour
             }
             bool equationCorrect = equationgenerator.isEquationCorrect(newList);
             if (equationCorrect) {
+                controller.enabled = false;
+
                 Debug.Log("You won!");
-                if (GameManager.currentLevel < 5) {
-                    GameManager.currentLevel++;
-                    SceneManager.LoadScene(1);
-                }
-                else if (GameManager.currentLevel == 5) {
-                    SceneManager.LoadScene(2);
-                }
+                StartCoroutine(DisplayMessageAndLoadNextLevel());
             }
             else {
-                Debug.Log("Try again");
-                
+                text.color = Color.red;
+                text.text = "INCORRECT! Try Again!";
             }
         }
-
         
+    }
+
+    private IEnumerator DisplayMessageAndLoadNextLevel()
+    {
+        text.gameObject.SetActive(true);
+        text.color = Color.green;
+        text.text = "CORRECT! Loading next level...";
+
+        yield return new WaitForSeconds(3);
+
+        text.gameObject.SetActive(false);
+
+        if (GameManager.currentLevel < 5)
+        {
+            GameManager.currentLevel++;
+            SceneManager.LoadScene(1);
+        }
+        else if (GameManager.currentLevel == 5)
+        {
+            SceneManager.LoadScene(2);
+        }
     }
 
 }

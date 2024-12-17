@@ -8,8 +8,8 @@ public class EnemyMovement : MonoBehaviour
     private int currIdx = 0;
     private float destThreshold = 0.5f;
 
-    public float walkSpeed;
-    public float runSpeed;
+    private float walkSpeed = 0.05f;
+    private float runSpeed;
     private float currentSpeed = 0.05f;
     public float rotationSpeed;
 
@@ -50,6 +50,11 @@ public class EnemyMovement : MonoBehaviour
     public void startRunning()
     {
         currentSpeed = runSpeed;
+    }
+
+    public void setRunSpeed(float newSpeed)
+    {
+        runSpeed = newSpeed;
     }
 
     public void startWalking()
